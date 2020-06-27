@@ -1,4 +1,4 @@
-# Deploy a People Counter App at the Edge
+# Α People Counter App at the Edge
 
 | Details            |              |
 |-----------------------|---------------|
