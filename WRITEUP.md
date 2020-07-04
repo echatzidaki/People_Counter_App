@@ -146,20 +146,20 @@ I did not have custom layers.
 
 ## Comparing Model Performance
 
-The difference between the accuracy of the models was depended on how I could use the results in my code. The simple version that worked perfectly with person-detection-retail-0013.xml, did not meet my expectations with the others. I should include many more things like the distance and keep track of the person with multiple parameters. Almost all the models lose human appearance when the person is stable. The accuracy was a tragedy... However, the pedestrian-detection-adas-0002.xml was a disappointment,ent as it tracked a person as multiple people or it also missed them sometimes. I think the person-detection-retail-0013.xml was perfectly made for the current video and similar simple occasions.
+I developed worked perfectly with person-detection-retail-0013.xml, but it did not meet my expectations with the others. I should include many more parameters and conditions, like the moving distance in the area, to keep track of the person. Almost all the models lose human appearance when the person is stable. However, the pedestrian-detection-adas-0002.xml was not too accurate, because it tracked a person as multiple people or it also missed them sometimes. I think the person-detection-retail-0013.xml was perfectly made for the current video and similar simple occasions.
 
 
 The size of the model pre- and post-conversion was:
 (ls -l --block-size=K)
-| Model Name         		| Size pre- |  Size post-  | 
+| Model Name         		| Size(M) pre- |  Size(M) post-  | 
 | ----------------------------- | ----------------- |-----------|
 | **Tensorflow** 	|     |   |
 | ssd_mobilenet_v1_coco|  27.7   |  26 |
 | ssd_mobilenet_v2_coco|  66.5   |   64 |
 | ssd_inception_v2_coco |  98 |  96  |
 | **Intel**||   |
-| adas-0002 (FP32)|  -  | 5M  | 
-| retail-0013 (FP32)|  -  |  2M | 
+| adas-0002 (FP32)|  -  | 5  | 
+| retail-0013 (FP32)|  -  |  2 | 
 
 
 The inference time of the model pre- and post-conversion was:
@@ -167,14 +167,14 @@ The inference time of the model pre- and post-conversion was:
 | Model Name  | Inference pre- (ms) |  Inference post- (ms)  | 
 | ----------------------------- | ----------------- |-----------|
 | **Tensorflow** 	|     |   |
-| ssd_mobilenet_v1_coco|  42**   |  51 |
-| ssd_mobilenet_v2_coco|  30**   |   72 |
-| ssd_inception_v2_coco |  26** |  159  |
+| ssd_mobilenet_v1_coco|  42*   |  51 |
+| ssd_mobilenet_v2_coco|  30*   |   72 |
+| ssd_inception_v2_coco |  26* |  159  |
 | **Intel**||   |
 | adas-0002 (FP32)|  -  |  56 | 
 | retail-0013 (FP32)|  -  | 49  |
 
-**https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
+* https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
 
 ## Assess Model Use Cases
 
@@ -186,6 +186,6 @@ Lighting, model accuracy, and camera focal length/image size have different effe
 deployed edge model. The potential effects of each of these are as follows:
 
 The lightning, the angle of the object/person, or even the camera focal length/image size (especially with very bad resolution) can change the shape and the features of it and the system could potentially ignore it. For example a faded figure from the sunlight, or a person too far away or a human in a strange position, it is hard to get the proper attention and the system detects it.
-The model accuracy is very important as the model should not miss, in our scenario people, or detects other objects as people. The model should be also trained to find people in many positions. A trained model of 2 pictures can not be a good example, as well as an overtrained. We also should be aware of the resources(ie. memory) and the system that we use. 
+The model accuracy is very important, because the model should not miss, in our scenario people, or detects other objects as people. The model should also be trained to find people in many positions. A trained model of 2 pictures can not be a good example, as well as an overfitted model. We also should be aware of the resources(ie. memory) and the system that we use. 
 
 
