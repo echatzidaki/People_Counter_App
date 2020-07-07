@@ -57,10 +57,6 @@ LE_MODEL = "/home/workspace/models/pedestrian-detection-adas-0002.xml"
 DEF_TARGET_DEVICE = "CPU"
 DEVICES = ["CPU", "GPU", "MYRIAD", "HETERO:FPGA,CPU", "HDDL"]
 
-# Weightage/ratio to merge (for integrated output) people count frame and colorMap frame(sum of both should be 1)
-P_COUNT_FRAME_WEIGHTAGE = 0.65
-COLORMAP_FRAME_WEIGHTAGE_1 = 0.35
-
 def_prob = 0.5
 
 input_type = None
@@ -70,7 +66,6 @@ truly_async_mode = False
 def build_argparser():
     """
     Parse command line arguments.
-    :return: command line arguments
     """
     parser = ArgumentParser()
     parser.add_argument("-m", "--model", required=True, type=str,
@@ -96,30 +91,31 @@ def build_argparser():
 
 def globs_args(args):
     """
-    Some checks and pass global variables to  global_vars file
-    :return: command line arguments
+    Check input argument device
     """
-#     log.info("Check command line args...and pass them to global_vars file...")
+	# log.info("Check command line args...and pass them to global_vars file...")
    
     if 'MULTI' in args.device:
         targ_devices = args.device.split(':')[1].split(',')
         for devices in targ_devices:
             if devices not in DEVICES:
                 print("Unsupported device: " + args.device)
-#                 log.info("Unsupported device!")
+				# log.info("Unsupported device!")
                 sys.exit(1)
         
     return args
 
 
 def get_input(input_stream):
-    
+    """
+    Check the type of input (camera, image, video)
+    """
     # Normalise any letter in input file extension to lowercase
     input_stream = input_stream.lower()
     # file_extension = os.path.splitext(input_stream)
     
     input_type = None
-    # Check if input file has video extension from VIDEO_EXT_LIST
+    # Check the extension to make a decision
     if input_stream.endswith('.mp4') :
         #         log.info("It's a video file...")
         input_type = 2
@@ -137,15 +133,19 @@ def get_input(input_stream):
 
 
 def connect_mqtt():
-    ### TODO: Connect to the MQTT client ###
+	"""
+    Connect to the MQTT client 
+    """
     client = mqtt.Client()
     client.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
     return client
 
 
-# Create a video writer for the output video
-def video_writer(h, w):
 
+def video_writer(h, w):
+	"""
+    Create a video writer for the output video
+    """
     if input_type == 0 :
         # Mac uses cv2.VideoWriter_fourcc('M','J','P','G') to write an .mp4 file
         # Linux uses 0x00000021 to write an .mp4 file
@@ -155,13 +155,15 @@ def video_writer(h, w):
         out = None
         
     return out
-# Change image-data layout from HWC to CHW        
+	      
 def preprocessing_image(in_image, h, w):  
-    
+	"""
+    Change image-data layout from HWC to CHW  
+    """
     in_image = cv2.resize(in_image, (w, h))
     in_image = in_image.transpose((2, 0, 1))
     in_image = in_image.reshape(1, *in_image.shape)
-#     log.info("HWC to CHW - Preprocessing, Done...")
+	# log.info("HWC to CHW - Preprocessing, Done...")
     
     return in_image
 
@@ -187,9 +189,11 @@ def draw_bounding_box(res_output, frame, h, w, prob_threshold, en_dist):
             # Update detected human counter 
             people_counter = people_counter + 1
             
+			# Calculate the dictance
             cord_x = (xmax + xmin)/2 - (frame.shape[1])/2
             cord_y = (ymax + ymin)/2 - (frame.shape[0])/2
-            cam_distance = math.sqrt((cord_x)**2 + (cord_y)**2 ) 
+            cam_distance = math.sqrt((cord_x)**2 + (cord_y)**2 )
+			
     return people_counter, frame, cam_distance
 
 
@@ -229,7 +233,7 @@ def infer_on_stream(args, client):
     # Get and open video capture
     cap = cv2.VideoCapture(args.input)
     assert cap.isOpened(), "Fail! Can not open: " + args.input
-#     log.info("Succeed! Input is Opened...")
+    # log.info("Succeed! Input is Opened...")
 
     # Input stream (is) - Grab the shape of the input 
     is_width = int(cap.get(3))
@@ -237,7 +241,7 @@ def infer_on_stream(args, client):
     
     # if not input_type == 1:
         # out = cv2.VideoWriter('out_video.mp4', 0x00000021, 30, (100,100)) 
-#         log.info("Created a video writer for the output video ...")
+        # log.info("Created a video writer for the output video ...")
 
 
     # Variables
@@ -259,7 +263,7 @@ def infer_on_stream(args, client):
         ret, frame = cap.read()
     # Process frames until the video ends, or process is exited
     while cap.isOpened():
-#         log.info("While input is Opened...")
+        # log.info("While input is Opened...")
         # Capture frame-by-frame. 
         # Frame will get the next frame in the camera
         # Ret will obtain return value from getting the camera frame or not - boolean
@@ -272,16 +276,16 @@ def infer_on_stream(args, client):
             frame_count +=1
             s_frame_time = time.time()
         if not ret:
-#             log.info("Can not find flag...Finish...")
+            # log.info("Can not find flag...Finish...")
             break
         
         key_pressed = cv2.waitKey(60)
              
         # HWC to CHW        
-#         input_stream = preprocessing_image(frame, h, w)
+        # input_stream = preprocessing_image(frame, h, w)
         # Start async inference for specified request
         inf_start = time.time()
-#         inf_net.exec_net(input_stream, req_id)
+        # inf_net.exec_net(input_stream, req_id)
         
         if truly_async_mode:
             # HWC to CHW        
@@ -352,7 +356,7 @@ def infer_on_stream(args, client):
             
             en_dist = distance         
      
-        ### Send frame to the ffmpeg server
+        # Send frame to the ffmpeg server
         sys.stdout.buffer.write(frame)
         sys.stdout.flush()
             
@@ -365,18 +369,18 @@ def infer_on_stream(args, client):
             # out.write(frame)
 
         
-#         render_start = time.time()
-#         cv2.imshow("Detection Results", frame)
-#         render_end = time.time()
-#         render_time = render_end - render_start
+        # render_start = time.time()
+        # cv2.imshow("Detection Results", frame)
+        # render_end = time.time()
+        # render_time = render_end - render_start
 
         if truly_async_mode:
             req_id = next_req_id
             next_req_id = req_id
             frame = next_frame
 
-#         if not input_type == 1:
-#             out.release()   
+        # if not input_type == 1:
+            # out.release()   
             
         # Break if escapturee key pressed
         if key_pressed == 27:
