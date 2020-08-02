@@ -1,14 +1,10 @@
 # Α People Counter App at the Edge
 
-| Details            |              |
-|-----------------------|---------------|
-| Programming Language: |  Python 3.5 or 3.6 |
-
 ![people-counter-python](./images/people-counter-image.png)
 
 ## What it Does
 
-The people counter application will demonstrate how to create a smart video IoT solution using Intel® hardware and software tools. The app will detect people in a designated area, providing the number of people in the frame, average duration of people in frame, and total count.
+The people counter application is a smart video IoT solution using Intel® hardware and software tools. The app will detect people in a designated area, providing the number of people in the frame, average duration of people in frame, and total count.
 
 ## How it Works
 
@@ -33,7 +29,11 @@ You will choose a model to use and convert it with the Model Optimizer.
 *   Npm v3.10.10
 *   CMake
 *   MQTT Mosca server
-  
+
+| Details            |              |
+|-----------------------|---------------|
+| Programming Language: |  Python 3.5 or 3.6 |
+
         
 ## Setup
 
