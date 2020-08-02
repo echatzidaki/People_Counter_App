@@ -174,7 +174,7 @@ The inference time of the model pre- and post-conversion was:
 | adas-0002 (FP32)|  -  |  56 | 
 | retail-0013 (FP32)|  -  | 49  |
 
-* https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
+*https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
 
 ## Assess Model Use Cases
 
